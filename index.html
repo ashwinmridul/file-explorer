@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: lavender;
+        }
+        #path {
+
+        }
+        #list {
+            list-style: none;
+            border: 1px solid black;
+            padding: 0;
+        }
+        #list li {
+            padding: 4px;
+        }
+        #list li a {
+            cursor: pointer;
+        }
+        #list li.folder {
+            color: orangered;
+        }
+        #list li.file {
+            color: dodgerblue;
+        }
+        #list li:not(:last-child) {
+            border-bottom: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div id="path">/home</div>
+        <ul id="list"></ul>
+    </div>
+    <script>
+        var path = "/";
+        var oldPath = "/";
+
+        function getData() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4) {
+                    if(this.status == 200) {
+                        loadList(JSON.parse(this.responseText));
+                    } else if(this.status == 401) {
+                        window.location.reload();
+                    } else {
+                        path = oldPath;
+                    }
+                }
+            };
+            xhttp.open("GET", "/list_dir?path=" + path, true);
+            xhttp.send();
+        }
+
+        function loadList(list) {
+            document.getElementById("path").innerText = path;
+            var ulItem = document.getElementById("list");
+            while (ulItem.hasChildNodes()) {
+                ulItem.removeChild(ulItem.lastChild);
+            }
+            list.forEach(function(item) {
+                var liItem = document.createElement("LI");
+                var anchor = document.createElement("A");
+                anchor.innerText = item.name;
+                if(item.type == "folder") {
+                    liItem.className = "folder";
+                    anchor.onclick = function (event) {
+                        oldPath = path;
+                        path = path + event.target.innerText + "/";
+                        getData();
+                    }
+                } else {
+                    liItem.className = "file";
+                    anchor.onclick = function(event) {
+                        window.open("/get_file?path=" + path + event.target.innerText, "_blank");
+                    }
+                }
+                liItem.appendChild(anchor);
+                ulItem.appendChild(liItem);
+            });
+        }
+
+        window.onload = getData;
+    </script>
+</body>
+</html>
