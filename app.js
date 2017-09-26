@@ -43,7 +43,7 @@ http.createServer(function (req, res) {
         }
     } else if(url_parts.pathname == "/list_dir") {
         if(cookies.get("login", {signed: true}) != undefined) {
-            cookies.set("login", "1", {signed: true, maxAge: 10000});
+            cookies.set("login", "1", {signed: true, maxAge: 100000});
             listDir(url_parts.query.path || "/", function(err, list) {
                 if(err == null) {
                     res.writeHead(200, {'Content-Type': 'application/json'});
@@ -70,7 +70,7 @@ http.createServer(function (req, res) {
         }
     } else if(url_parts.pathname == "/get_file") {
         if(cookies.get("login", {signed: true}) != undefined) {
-            cookies.set("login", "1", {signed: true, maxAge: 10000});
+            cookies.set("login", "1", {signed: true, maxAge: 100000});
             var file = url_parts.query.path;
 
             var filename = path.basename(file);
@@ -101,7 +101,7 @@ http.createServer(function (req, res) {
 
     } else if(url_parts.pathname == "/login") {
         if(url_parts.query.username == user && url_parts.query.password == pass) {
-            cookies.set("login", "1", {signed: true, maxAge: 10000});
+            cookies.set("login", "1", {signed: true, maxAge: 100000});
             res.writeHead(200, {'Content-Type': 'application/json'});
             res.write("Success");
             res.end();
